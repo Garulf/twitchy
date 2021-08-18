@@ -44,7 +44,7 @@ jobs:
           minor_pattern: "(MINOR)"
           format: "${major}.${minor}.${patch}"
           short_tags: false
-          bump_each_commit: false
+          bump_each_commit: true
       - name: "Update plugin.json version to: ${{steps.version.outputs.prop}}"
         uses: jossef/action-set-json-field@v1
         with:
@@ -63,7 +63,7 @@ jobs:
       - name: Publish
         uses: softprops/action-gh-release@v1
         with:
-          draft: true
+          prerelease: true
           files: "./${{github.event.repository.name}}.zip"
           tag_name: "v${{steps.version.outputs.version}}"
         env:
