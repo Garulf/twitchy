@@ -1,0 +1,12 @@
+{
+    "ID": "477F16413D374364A4D5D36DCE68ED45",
+    "ActionKeyword": "tw",
+    "Name": "Twitchy",
+    "Description": "Search and stream Twitch.tv",
+    "Author": "Garulf",
+    "Version": "0.0.1",
+    "Language": "python",
+    "Website": "https://github.com/Garulf/twitchy",
+    "IcoPath": "icon.png",
+    "ExecuteFileName": "main.py"
+  }
