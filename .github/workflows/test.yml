@@ -7,7 +7,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Delete previous drafts
-        uses: Garulf/delete-draft-releases
+        uses: Garulf/delete-draft-releases@latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
