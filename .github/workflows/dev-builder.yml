@@ -2,7 +2,7 @@ name: "Dev-Builder"
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ dev ]
     tags-ignore:
       - 'v*'
     paths-ignore: 
