@@ -33,6 +33,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          pip install wheel
           pip install -r ./requirements.txt -t ./lib
       - name: Determine versioning
         id: version
@@ -49,14 +50,12 @@ jobs:
         with:
           file: 'plugin.json'
           field: Version
-          value: "${{steps.version.outputs.major}}.${{steps.version.outputs.minor}}.${{steps.version.outputs.patch}}-dev"
+          value: "${{steps.version.outputs.major}}.${{steps.version.outputs.minor}}.${{steps.version.outputs.patch}}"
       - name: Package files
         run: |
-          $exclude = @("demo.*","*.git*","README.*", "assets")
-          $path = "./*"
-          $files = Get-ChildItem -Path $path -Exclude $exclude
-          echo $files
-          Compress-Archive -DestinationPath ./"${{github.event.repository.name}}.zip" -Path $files
+          git clone https://github.com/Garulf/flow_commands/ bin
+          pip install -r ./bin/requirements.txt
+          python ./bin/commands.py package -n "${{github.event.repository.name}}.zip"
       - name: Delete previous drafts
         uses: hugo19941994/delete-draft-releases@v0.1.0
         env:
