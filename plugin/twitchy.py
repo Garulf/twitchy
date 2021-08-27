@@ -3,7 +3,9 @@ import tempfile
 import webbrowser
 
 from flox import Flox, ICON_SETTINGS, ICON_APP_ERROR, ICON_CANCEL
+import requests
 from twitch import TwitchClient, client
+
 # from streamlink import streams
 
 from requests.exceptions import HTTPError
