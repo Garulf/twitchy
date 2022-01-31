@@ -1,0 +1,12 @@
+body:
+  - type: textBlock
+    attributes:
+      name: description
+      description: >
+        Please provide a Client ID token.
+  - type: input
+    attributes:
+      name: client_id
+      label: 'Client ID:'
+      defaultValue: ""
+      description: Twitch.tv Client ID
