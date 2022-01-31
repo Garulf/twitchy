@@ -11,6 +11,7 @@ LIMIT = 10
 FILTER_CHAR = ":"
 GAMES_KEYWORD = "games"
 TEN_MINUTES = '600'
+MAX_THREAD_WORKERS = 10
 
 
 def is_live(channel, streams):
@@ -26,16 +27,17 @@ class Twitchy(Flox):
 
     def query(self, query):
         try:
-            if query == "":
-                featured_streams = self.client.streams.get_featured(5)
-                for stream in featured_streams:
-                    self.channel_result(stream['stream']['channel'], True)
-            else:
-                channels = self.client.search.channels(query, limit=LIMIT)
-                # This gets us a list of live streams
-                streams = self.client.search.streams(query, limit=LIMIT)
-                for channel in channels:
-                    self.channel_result(channel, streams)
+            with utils.ThreadPoolExecutor(max_workers=MAX_THREAD_WORKERS) as executor:
+                if query == "":
+                    featured_streams = self.client.streams.get_featured(5)
+                    for stream in featured_streams:
+                        self.channel_result(executor, stream['stream']['channel'], live=True)
+                else:
+                    channels = self.client.search.channels(query, limit=LIMIT)
+                    # This gets us a list of live streams
+                    streams = self.client.search.streams(query, limit=LIMIT)
+                    for channel in channels:
+                        self.channel_result(executor, channel, streams)
 
         except HTTPError as e:
             self.add_item(
@@ -45,16 +47,14 @@ class Twitchy(Flox):
             )
             self.logger.error(e)
 
-    def channel_result(self, channel, streams):
+    def channel_result(self, executor, channel, streams=[], live=None):
         subtitle = channel['description']
-        if streams is not True:
+        if live is None:
             live = is_live(channel, streams)
-        else:
-            live = True
         if live:
             subtitle = f"[LIVE] {channel['status']}"
         img = channel['logo'].replace(LOGO_300, LOGO_28)
-        icon = utils.get_icon(img, self.name, file_name=f"{channel['id']}.png")
+        icon = utils.get_icon(img, self.name, file_name=f"{channel['id']}.png", executor=executor)
         url = channel['url']
         self.add_item(
             title=channel['display_name'],
