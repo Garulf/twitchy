@@ -8,6 +8,7 @@ LOGO_300 = '300x300'
 LOGO_50 = '50x50'
 LOGO_28 = '28x28'
 LIMIT = 10
+FOLLOWS_LIMIT = 100
 FILTER_CHAR = ":"
 GAMES_KEYWORD = "games"
 TEN_MINUTES = '600'
@@ -24,11 +25,22 @@ class Twitchy(Flox):
     def __init__(self):
         super().__init__()
         self.client = TwitchClient(self.settings.get("client_id"))
+        self.username = self.settings.get("username")
 
     def query(self, query):
         try:
             with utils.ThreadPoolExecutor(max_workers=MAX_THREAD_WORKERS) as executor:
-                if query == "":
+                if self.username is not None and self.username != "":
+                    try:
+                        user_account_id = self.client.users.translate_usernames_to_ids([self.username])[0].id
+                    except IndexError:
+                        user_account_id = None
+                        self.logger.warning(f"Could not find user ID for user: {self.username}")
+                if query == "" and self.username is not None and self.username != "" and user_account_id is not None:
+                    followed_channels = self.client.users.get_follows(user_account_id, limit=FOLLOWS_LIMIT)
+                    for channel in followed_channels:
+                        self.channel_result(executor, channel["channel"], live=False)
+                elif query == "" :
                     featured_streams = self.client.streams.get_featured(5)
                     for stream in featured_streams:
                         self.channel_result(executor, stream['stream']['channel'], live=True)
@@ -46,6 +58,7 @@ class Twitchy(Flox):
                 icon=ICON_APP_ERROR,
             )
             self.logger.error(e)
+            raise
 
     def channel_result(self, executor, channel, streams=[], live=None):
         subtitle = channel['description']

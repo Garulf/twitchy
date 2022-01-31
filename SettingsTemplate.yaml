@@ -10,3 +10,9 @@ body:
       label: 'Client ID:'
       defaultValue: ""
       description: Twitch.tv Client ID
+  - type: input
+    attributes:
+      name: username
+      label: 'Username:'
+      defaultValue: ""
+      description: Twitch.tv Username
