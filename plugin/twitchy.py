@@ -10,6 +10,7 @@ LOGO_28 = '28x28'
 LIMIT = 10
 FILTER_CHAR = ":"
 GAMES_KEYWORD = "games"
+TEN_MINUTES = '600'
 
 
 def is_live(channel, streams):
@@ -25,13 +26,17 @@ class Twitchy(Flox):
 
     def query(self, query):
         try:
-            if query != "":
+            if query == "":
+                featured_streams = self.client.streams.get_featured(5)
+                for stream in featured_streams:
+                    self.channel_result(stream['stream']['channel'], True)
+            else:
                 channels = self.client.search.channels(query, limit=LIMIT)
                 # This gets us a list of live streams
                 streams = self.client.search.streams(query, limit=LIMIT)
                 for channel in channels:
-                    self.result(channel, streams)
- 
+                    self.channel_result(channel, streams)
+
         except HTTPError as e:
             self.add_item(
                 title="Something went wrong!",
@@ -40,9 +45,13 @@ class Twitchy(Flox):
             )
             self.logger.error(e)
 
-    def result(self, channel, streams):
+    def channel_result(self, channel, streams):
         subtitle = channel['description']
-        if is_live(channel, streams):
+        if streams is not True:
+            live = is_live(channel, streams)
+        else:
+            live = True
+        if live:
             subtitle = f"[LIVE] {channel['status']}"
         img = channel['logo'].replace(LOGO_300, LOGO_28)
         icon = utils.get_icon(img, self.name, file_name=f"{channel['id']}.png")
