@@ -3,16 +3,14 @@ body:
     attributes:
       name: description
       description: >
-        Please provide a Client ID token.
+        Please provide a Client ID token and OAuth token (New Twitch API requires a OAuth token).
   - type: input
     attributes:
       name: client_id
       label: 'Client ID:'
-      defaultValue: ""
       description: Twitch.tv Client ID
   - type: input
     attributes:
-      name: username
-      label: 'Username:'
-      defaultValue: ""
-      description: Twitch.tv Username
+      name: oauth_token
+      label: 'OAuth Token:'
+      description: Twitch.tv OAuth Token
