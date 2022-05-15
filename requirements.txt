@@ -1,3 +1,3 @@
 git+https://github.com/Garulf/python-twitch-client@add-search-channel-endpoint
 requests==2.25.1
-flox-lib==0.14.3
+flox-lib==0.16.0
