@@ -21,7 +21,7 @@ class Twitchy(Flox):
         self.client = TwitchHelix(
             client_id=self.settings.get("client_id"), oauth_token=self.settings.get("oauth_token")
         )
-        # self.username = self.settings.get("username")
+
 
     def _query(self, query):
         try:
