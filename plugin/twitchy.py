@@ -1,6 +1,6 @@
 import sys
 from flox import Flox, utils, ICON_APP_ERROR
-from twitch import TwitchHelix, exceptions
+from twitch import TwitchHelix
 from twitch.exceptions import TwitchOAuthException
 from itertools import islice
 
