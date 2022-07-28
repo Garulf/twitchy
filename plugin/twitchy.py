@@ -1,9 +1,11 @@
+import sys
 from flox import Flox, utils, ICON_APP_ERROR
-from twitch import TwitchHelix
+from twitch import TwitchHelix, exceptions
+from twitch.exceptions import TwitchOAuthException
 from itertools import islice
 
 from .item import ChannelItem, GameItem
-from .auth import get_oauth, validate_token
+from .auth import validate_token
 
 
 from requests.exceptions import HTTPError
@@ -18,25 +20,27 @@ BASE_URL = 'https://twitch.tv'
 class Twitchy(Flox):
     def __init__(self):
         super().__init__()
-        self.oath_token = self.settings.get("oauth_token")
+        self.oauth_token = self.settings.get("oauth_token")
         self.client_id = self.settings.get("client_id")
         self.client_secret = self.settings.get("client_secret")
-        if not self.oath_token or not self.client_id or not self.client_secret:
-            self.logger.error("Missing credentials")
-            self.add_item(
-                title="Missing credentials",
-                subtitle="Please set your credentials in the settings",
-                icon=ICON_APP_ERROR
-            )
-            return
-        if not self.oath_token or not validate_token(self.oath_token):
-            self.logger.debug("Attempting to refresh blank or invalid token.")
-            self.oath_token = get_oauth(self.client_id, self.client_secret)
-            self.settings["oauth_token"] = self.oath_token
-            self.logger.debug(f"New OAUTH token assigned: {self.oath_token[0:4]}{'x' * 10}")
         self.client = TwitchHelix(
-            client_id=self.settings.get("client_id"), oauth_token=self.oath_token
+            client_id=self.client_id, client_secret=self.client_secret, oauth_token=self.oauth_token
         )
+        if not self.oauth_token or not validate_token(self.oauth_token):
+            self.logger.debug("Attempting to refresh blank or invalid token.")
+            try:
+                self.oauth_token = self.client.get_oauth()
+            except TwitchOAuthException:
+                self.logger.error("Missing credentials")
+                self.add_item(
+                    title="Missing credentials",
+                    subtitle="Please set your credentials in the settings",
+                    icon=ICON_APP_ERROR
+                )
+                sys.exit(0)
+            self.settings["oauth_token"] = self.client._oauth_token
+            self.logger.debug(f"New OAUTH token assigned: {self.client._oauth_token[0:4]}{'x' * 10}")
+
 
 
     def _query(self, query):
