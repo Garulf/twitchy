@@ -3,7 +3,7 @@ body:
     attributes:
       name: description
       description: >
-        Please provide a Client ID token and Client Secret (New Twitch API requires a OAuth token).
+        Please provide a Twitch.tv Oauth token. Alternatively, you can provide a client ID & secret and one will be automatically retrieved for you.
   - type: input
     attributes:
       name: client_id
