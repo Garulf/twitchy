@@ -1,5 +1,7 @@
+import sys
 from flox import Flox, utils, ICON_APP_ERROR
-from twitch import TwitchHelix
+from twitch import TwitchHelix, exceptions
+from twitch.exceptions import TwitchOAuthException
 from itertools import islice
 
 from .item import ChannelItem, GameItem
@@ -24,17 +26,18 @@ class Twitchy(Flox):
         self.client = TwitchHelix(
             client_id=self.client_id, client_secret=self.client_secret, oauth_token=self.oauth_token
         )
-        if not self.client_id or not self.client_secret:
-            self.logger.error("Missing credentials")
-            self.add_item(
-                title="Missing credentials",
-                subtitle="Please set your credentials in the settings",
-                icon=ICON_APP_ERROR
-            )
-            return
         if not self.oauth_token or not validate_token(self.oauth_token):
             self.logger.debug("Attempting to refresh blank or invalid token.")
-            self.oauth_token = self.client.get_oauth()
+            try:
+                self.oauth_token = self.client.get_oauth()
+            except TwitchOAuthException:
+                self.logger.error("Missing credentials")
+                self.add_item(
+                    title="Missing credentials",
+                    subtitle="Please set your credentials in the settings",
+                    icon=ICON_APP_ERROR
+                )
+                sys.exit(0)
             self.settings["oauth_token"] = self.client._oauth_token
             self.logger.debug(f"New OAUTH token assigned: {self.client._oauth_token[0:4]}{'x' * 10}")
 
