@@ -27,6 +27,7 @@ class Twitchy(Flox):
         try:
             self.query(query)
         except HTTPError as e:
+            self.logger.exception(e)
             self.add_item(
                 title='ERROR: Unable to login!',
                 subtitle="Please check your Client ID and OAuth token in settings.",
