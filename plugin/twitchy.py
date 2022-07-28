@@ -3,6 +3,7 @@ from twitch import TwitchHelix
 from itertools import islice
 
 from .item import ChannelItem, GameItem
+from .auth import get_oauth, validate_token
 
 
 from requests.exceptions import HTTPError
