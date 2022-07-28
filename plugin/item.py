@@ -10,6 +10,7 @@ THUMBNAIL_SIZES = {
     "smallest": "28x28"
 }
 
+THUMBNAIL_SIZE_VAR = '{width}x{height}'
 DEFAULT_THUMBNAIL_SIZE = THUMBNAIL_SIZES["large"]
 
 class ResultItem(ABC):
@@ -43,6 +44,8 @@ class ResultItem(ABC):
     def get_thumbnail(self, size:str=DEFAULT_THUMBNAIL_SIZE):
         if size not in THUMBNAIL_SIZES:
             raise ValueError(f"{size} is not a valid thumbnail size")
+        if THUMBNAIL_SIZE_VAR in self.thumbnail:
+            return self.thumbnail.format(width=THUMBNAIL_SIZES[size].split('x')[0], height=THUMBNAIL_SIZES[size].split('x')[1])
         return self.thumbnail.replace(DEFAULT_THUMBNAIL_SIZE, THUMBNAIL_SIZES[size])
 
     def as_dict(self):
@@ -101,3 +104,53 @@ class GameItem(ChannelItem):
     def path(self):
         name = self.data.get("name")
         return f'directory/game/{name}'
+
+class UserItem(ResultItem):
+
+    @property
+    def title(self) -> str:
+        return self.data.get("display_name")
+
+    @property
+    def subtitle(self) -> str:
+        return self.data.get("description")
+
+    @property
+    def thumbnail(self):
+        return self.data.get("profile_image_url", "")
+
+    @property
+    def icon(self) -> str:
+        thumbnail = self.get_thumbnail("smallest")
+        file = thumbnail.split('/')[-1]
+        return utils.get_icon(thumbnail, self.cache_name, file, executor=self.executor)
+
+    @property
+    def parameters(self) -> list:
+        return [self.data.get("login")]
+
+class StreamItem(ResultItem):
+
+    @property
+    def title(self) -> str:
+        return self.data.get("user_name")
+
+    @property
+    def subtitle(self) -> str:
+        game = self.data.get("game_name")
+        title = self.data.get("title")
+        return f"{game}: {title}"
+
+    @property
+    def thumbnail(self):
+        return self.data.get("thumbnail_url", "")
+
+    @property
+    def icon(self) -> str:
+        thumbnail = self.get_thumbnail("smallest")
+        file = thumbnail.split('/')[-1]
+        return utils.get_icon(thumbnail, self.cache_name, file, executor=self.executor)
+
+    @property
+    def parameters(self) -> list:
+        return [self.data.get("user_login")]

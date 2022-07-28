@@ -19,3 +19,13 @@ body:
       name: oauth_token
       label: 'OAuth Token:'
       description: Twitch.tv OAuth Token
+  - type: input
+    attributes:
+      name: username
+      label: 'Username:'
+      description: Twitch.tv Username
+  - type: textBlock
+    attributes:
+      name: username_description
+      description: >
+        If a username is provided the plugin will display your followed streams.

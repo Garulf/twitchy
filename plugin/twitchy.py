@@ -1,11 +1,10 @@
 import sys
 from flox import Flox, utils, ICON_APP_ERROR
-from twitch import TwitchHelix, exceptions
+from twitch import TwitchHelix
 from twitch.exceptions import TwitchOAuthException
 from itertools import islice
 
-from .item import ChannelItem, GameItem
-from .auth import validate_token
+from .item import ChannelItem, GameItem, UserItem, StreamItem
 
 
 from requests.exceptions import HTTPError
@@ -23,10 +22,11 @@ class Twitchy(Flox):
         self.oauth_token = self.settings.get("oauth_token")
         self.client_id = self.settings.get("client_id")
         self.client_secret = self.settings.get("client_secret")
+        self.username = self.settings.get("username")
         self.client = TwitchHelix(
             client_id=self.client_id, client_secret=self.client_secret, oauth_token=self.oauth_token
         )
-        if not self.oauth_token or not validate_token(self.oauth_token):
+        if not self.oauth_token or not self.client.validate_token():
             self.logger.debug("Attempting to refresh blank or invalid token.")
             try:
                 self.oauth_token = self.client.get_oauth()
@@ -63,12 +63,20 @@ class Twitchy(Flox):
                 if len(query) > 1:
                     _iterator = (i for i in islice(_iterator, 0, 5000) if query[1:].lower() in i['name'].lower())
                 item_obj = GameItem
+            elif query.startswith('#') and self.username:
+                _iterator = self.follows()
+                item_obj = UserItem
+                limit = 100
             elif query != '':
                 _iterator = self.client.search_channels(query=query)
                 item_obj = ChannelItem
                 limit = LIMIT
+            elif query == '' and self.username:
+                _iterator = self.live_streams()
+                item_obj = StreamItem
+                limit = 100
             else:
-                return []
+                return
             for item in islice(_iterator, 0, limit or LIMIT):
                 self.add_item(**item_obj(
                     item,
@@ -77,6 +85,22 @@ class Twitchy(Flox):
                     executor=executor
                 ).as_dict()
                 )
+
+    def get_user_id(self, username):
+        return self.client.get_users(login_names=[username])[0]['id']
+
+    def get_following_ids(self, id):
+        return [follow['to_id'] for follow in self.client.get_user_follows(from_id=id, page_size=100)]
+
+    def follows(self):
+        id = self.get_user_id(self.username)
+        following_ids = self.get_following_ids(id)
+        return self.client.get_users(ids=following_ids)
+
+    def live_streams(self):
+        id = self.get_user_id(self.username)
+        following_ids = self.get_following_ids(id)
+        return self.client.get_streams(user_ids=following_ids)
 
     def open_channel(self, path):
         self.logger.warning(f"Opening channel {path}")
