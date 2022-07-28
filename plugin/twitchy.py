@@ -92,12 +92,12 @@ class Twitchy(Flox):
         return [follow['to_id'] for follow in self.client.get_user_follows(from_id=id, page_size=100)]
 
     def follows(self):
-        id = self.get_user_id('Garu1f')
+        id = self.get_user_id(self.username)
         following_ids = self.get_following_ids(id)
         return self.client.get_users(ids=following_ids)
 
     def live_streams(self):
-        id = self.get_user_id('Garu1f')
+        id = self.get_user_id(self.username)
         following_ids = self.get_following_ids(id)
         return self.client.get_streams(user_ids=following_ids)
 
