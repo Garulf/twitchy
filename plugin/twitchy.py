@@ -18,10 +18,13 @@ BASE_URL = 'https://twitch.tv'
 class Twitchy(Flox):
     def __init__(self):
         super().__init__()
-        self.oath_token = self.settings.get("oauth_token")
+        self.oauth_token = self.settings.get("oauth_token")
         self.client_id = self.settings.get("client_id")
         self.client_secret = self.settings.get("client_secret")
-        if not self.oath_token or not self.client_id or not self.client_secret:
+        self.client = TwitchHelix(
+            client_id=self.client_id, client_secret=self.client_secret, oauth_token=self.oauth_token
+        )
+        if not self.client_id or not self.client_secret:
             self.logger.error("Missing credentials")
             self.add_item(
                 title="Missing credentials",
@@ -29,14 +32,12 @@ class Twitchy(Flox):
                 icon=ICON_APP_ERROR
             )
             return
-        if not self.oath_token or not validate_token(self.oath_token):
+        if not self.oauth_token or not validate_token(self.oauth_token):
             self.logger.debug("Attempting to refresh blank or invalid token.")
-            self.oath_token = get_oauth(self.client_id, self.client_secret)
-            self.settings["oauth_token"] = self.oath_token
-            self.logger.debug(f"New OAUTH token assigned: {self.oath_token[0:4]}{'x' * 10}")
-        self.client = TwitchHelix(
-            client_id=self.settings.get("client_id"), oauth_token=self.oath_token
-        )
+            self.oauth_token = self.client.get_oauth()
+            self.settings["oauth_token"] = self.client._oauth_token
+            self.logger.debug(f"New OAUTH token assigned: {self.client._oauth_token[0:4]}{'x' * 10}")
+
 
 
     def _query(self, query):
