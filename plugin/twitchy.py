@@ -63,7 +63,7 @@ class Twitchy(Flox):
                 if len(query) > 1:
                     _iterator = (i for i in islice(_iterator, 0, 5000) if query[1:].lower() in i['name'].lower())
                 item_obj = GameItem
-            elif query.startswith('#'):
+            elif query.startswith('#') and self.username:
                 _iterator = self.follows()
                 item_obj = UserItem
                 limit = 100
@@ -71,10 +71,12 @@ class Twitchy(Flox):
                 _iterator = self.client.search_channels(query=query)
                 item_obj = ChannelItem
                 limit = LIMIT
-            else:
+            elif query == '' and self.username:
                 _iterator = self.live_streams()
                 item_obj = StreamItem
                 limit = 100
+            else:
+                return
             for item in islice(_iterator, 0, limit or LIMIT):
                 self.add_item(**item_obj(
                     item,
