@@ -21,7 +21,7 @@ body:
       description: Twitch.tv OAuth Token
   - type: input
     attributes:
-      name: user_name
+      name: username
       label: 'Username:'
       description: Twitch.tv Username
   - type: textBlock
