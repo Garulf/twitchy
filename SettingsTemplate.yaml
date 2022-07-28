@@ -11,6 +11,11 @@ body:
       description: Twitch.tv Client ID
   - type: input
     attributes:
+      name: client_secret
+      label: 'Client Secret:'
+      description: Twitch.tv Client Secret
+  - type: input
+    attributes:
       name: oauth_token
       label: 'OAuth Token:'
       description: Twitch.tv OAuth Token
