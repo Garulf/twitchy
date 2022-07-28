@@ -14,7 +14,7 @@ body:
       name: client_secret
       label: 'Client Secret:'
       description: Twitch.tv Client Secret
-  - type: input
+  - type: passwordBox
     attributes:
       name: oauth_token
       label: 'OAuth Token:'
