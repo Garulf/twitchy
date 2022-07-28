@@ -101,3 +101,53 @@ class GameItem(ChannelItem):
     def path(self):
         name = self.data.get("name")
         return f'directory/game/{name}'
+
+class UserItem(ResultItem):
+
+    @property
+    def title(self) -> str:
+        return self.data.get("display_name")
+
+    @property
+    def subtitle(self) -> str:
+        return self.data.get("description")
+
+    @property
+    def thumbnail(self):
+        return self.data.get("profile_image_url", "")
+
+    @property
+    def icon(self) -> str:
+        thumbnail = self.get_thumbnail("smallest")
+        file = thumbnail.split('/')[-1]
+        return utils.get_icon(thumbnail, self.cache_name, file, executor=self.executor)
+
+    @property
+    def parameters(self) -> list:
+        return [self.data.get("login")]
+
+class StreamItem(ResultItem):
+
+    @property
+    def title(self) -> str:
+        return self.data.get("user_name")
+
+    @property
+    def subtitle(self) -> str:
+        game = self.data.get("game_name")
+        title = self.data.get("title")
+        return f"{game}: {title}"
+
+    @property
+    def thumbnail(self):
+        return self.data.get("thumbnail_url", "")
+
+    @property
+    def icon(self) -> str:
+        thumbnail = self.get_thumbnail("smallest")
+        file = thumbnail.split('/')[-1]
+        return utils.get_icon(thumbnail, self.cache_name, file, executor=self.executor)
+
+    @property
+    def parameters(self) -> list:
+        return [self.data.get("user_login")]
