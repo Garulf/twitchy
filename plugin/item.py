@@ -10,6 +10,7 @@ THUMBNAIL_SIZES = {
     "smallest": "28x28"
 }
 
+THUMBNAIL_SIZE_VAR = '{width}x{height}'
 DEFAULT_THUMBNAIL_SIZE = THUMBNAIL_SIZES["large"]
 
 class ResultItem(ABC):
@@ -43,6 +44,8 @@ class ResultItem(ABC):
     def get_thumbnail(self, size:str=DEFAULT_THUMBNAIL_SIZE):
         if size not in THUMBNAIL_SIZES:
             raise ValueError(f"{size} is not a valid thumbnail size")
+        if THUMBNAIL_SIZE_VAR in self.thumbnail:
+            return self.thumbnail.format(width=THUMBNAIL_SIZES[size].split('x')[0], height=THUMBNAIL_SIZES[size].split('x')[1])
         return self.thumbnail.replace(DEFAULT_THUMBNAIL_SIZE, THUMBNAIL_SIZES[size])
 
     def as_dict(self):
