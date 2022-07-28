@@ -3,6 +3,7 @@ from twitch import TwitchHelix
 from itertools import islice
 
 from .item import ChannelItem, GameItem
+from .auth import get_oauth, validate_token
 
 
 from requests.exceptions import HTTPError
@@ -17,15 +18,32 @@ BASE_URL = 'https://twitch.tv'
 class Twitchy(Flox):
     def __init__(self):
         super().__init__()
+        self.oath_token = self.settings.get("oauth_token")
+        self.client_id = self.settings.get("client_id")
+        self.client_secret = self.settings.get("client_secret")
+        if not self.oath_token or not self.client_id or not self.client_secret:
+            self.logger.error("Missing credentials")
+            self.add_item(
+                title="Missing credentials",
+                subtitle="Please set your credentials in the settings",
+                icon=ICON_APP_ERROR
+            )
+            return
+        if not self.oath_token or not validate_token(self.oath_token):
+            self.logger.debug("Attempting to refresh blank or invalid token.")
+            self.oath_token = get_oauth(self.client_id, self.client_secret)
+            self.settings["oauth_token"] = self.oath_token
+            self.logger.debug(f"New OAUTH token assigned: {self.oath_token[0:4]}{'x' * 10}")
         self.client = TwitchHelix(
-            client_id=self.settings.get("client_id"), oauth_token=self.settings.get("oauth_token")
+            client_id=self.settings.get("client_id"), oauth_token=self.oath_token
         )
-        # self.username = self.settings.get("username")
+
 
     def _query(self, query):
         try:
             self.query(query)
         except HTTPError as e:
+            self.logger.exception(e)
             self.add_item(
                 title='ERROR: Unable to login!',
                 subtitle="Please check your Client ID and OAuth token in settings.",
