@@ -28,6 +28,7 @@ class Twitchy(Flox):
                 subtitle="Please set your credentials in the settings",
                 icon=ICON_APP_ERROR
             )
+            return
         if not self.oath_token or not validate_token(self.oath_token):
             self.logger.debug("Attempting to refresh blank or invalid token.")
             self.oath_token = get_oauth(self.client_id, self.client_secret)
