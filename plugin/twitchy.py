@@ -5,7 +5,6 @@ from twitch.exceptions import TwitchOAuthException
 from itertools import islice
 
 from .item import ChannelItem, GameItem, UserItem, StreamItem
-from .auth import validate_token
 
 
 from requests.exceptions import HTTPError
