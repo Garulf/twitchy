@@ -1,3 +1,6 @@
+name: "Test Plugin"
+on:
+  workflow_dispatch:
 jobs:
   auto-update:
     runs-on: windows-latest
