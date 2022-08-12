@@ -19,4 +19,4 @@ jobs:
       uses: romoh/dependencies-autoupdate@v1
       with: 
         token: ${{ secrets.GITHUB_TOKEN }}
-        update-command: "'python -m pip install --upgrade pip && pip install -r ./requirements.txt -t ./lib'"
+        update-command: "'python -m pip install --upgrade pip && pip install -r ./requirements.txt -t ./lib && pip install -U -r ./requirements.txt'"
