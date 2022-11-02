@@ -7,25 +7,43 @@ body:
   - type: input
     attributes:
       name: client_id
-      label: 'Client ID:'
+      label: "Client ID:"
       description: Twitch.tv Client ID
   - type: input
     attributes:
       name: client_secret
-      label: 'Client Secret:'
+      label: "Client Secret:"
       description: Twitch.tv Client Secret
   - type: passwordBox
     attributes:
       name: oauth_token
-      label: 'OAuth Token:'
+      label: "OAuth Token:"
       description: Twitch.tv OAuth Token
   - type: input
     attributes:
       name: username
-      label: 'Username:'
+      label: "Username:"
       description: Twitch.tv Username
   - type: textBlock
     attributes:
       name: username_description
       description: >
         If a username is provided the plugin will display your followed streams.
+  - type: input
+    attributes:
+      name: program_path
+      label: "Program Path:"
+      description: Path to custom program to open stream with
+  - type: input
+    attributes:
+      name: program_args
+      label: "Program Arguments:"
+      description: Arguments to pass to custom program
+  - type: textBlock
+    attributes:
+      name: program_description
+      description: >
+        Program args can use the following placeholders:
+        {url} - Stream URL
+        {best} - Best quality stream URL
+        {worst} - Worst quality stream URL

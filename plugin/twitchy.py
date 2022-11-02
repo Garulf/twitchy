@@ -3,6 +3,9 @@ from flox import Flox, utils, ICON_APP_ERROR
 from twitch import TwitchHelix
 from twitch.exceptions import TwitchOAuthException
 from itertools import islice
+from pathlib import Path
+from subprocess import Popen
+import streamlink
 
 from .item import ChannelItem, GameItem, UserItem, StreamItem
 
@@ -39,9 +42,8 @@ class Twitchy(Flox):
                 )
                 sys.exit(0)
             self.settings["oauth_token"] = self.client._oauth_token
-            self.logger.debug(f"New OAUTH token assigned: {self.client._oauth_token[0:4]}{'x' * 10}")
-
-
+            self.logger.debug(
+                f"New OAUTH token assigned: {self.client._oauth_token[0:4]}{'x' * 10}")
 
     def _query(self, query):
         try:
@@ -61,7 +63,8 @@ class Twitchy(Flox):
                 _iterator = self.client.get_top_games(page_size=100)
                 limit = 50
                 if len(query) > 1:
-                    _iterator = (i for i in islice(_iterator, 0, 5000) if query[1:].lower() in i['name'].lower())
+                    _iterator = (i for i in islice(_iterator, 0, 5000)
+                                 if query[1:].lower() in i['name'].lower())
                 item_obj = GameItem
             elif query.startswith('#') and self.username:
                 _iterator = self.follows()
@@ -92,6 +95,27 @@ class Twitchy(Flox):
     def get_following_ids(self, id):
         return [follow['to_id'] for follow in self.client.get_user_follows(from_id=id, page_size=100)]
 
+    def context_menu(self, data):
+        program_path = self.settings.get("program_path")
+        if program_path:
+            id = data[0]
+            best, worst = "", ""
+            program_args = self.settings.get("program_args", "{url}")
+            program_name = Path(program_path).name
+            if "{best}" in program_args or "{worst}" in program_args:
+                streams = streamlink.streams(f"{BASE_URL}/{id}")
+                best = streams["best"].url
+                worst = streams["worst"].url
+            args = program_args.format(
+                url=f"{BASE_URL}/{id}", best=best, worst=worst)
+            self.add_item(
+                title=f"Open Stream in {program_name}",
+                subtitle=args,
+                icon=program_path,
+                method=self.open_program,
+                parameters=[program_path, args]
+            )
+
     def follows(self):
         id = self.get_user_id(self.username)
         following_ids = self.get_following_ids(id)
@@ -105,3 +129,6 @@ class Twitchy(Flox):
     def open_channel(self, path):
         self.logger.warning(f"Opening channel {path}")
         self.browser_open(f"{BASE_URL}/{path}")
+
+    def open_program(self, program_path, args):
+        proc = Popen([program_path, args])
