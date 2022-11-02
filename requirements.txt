@@ -1,3 +1,4 @@
 git+https://github.com/Garulf/python-twitch-client
+flox-lib==0.18.1
+streamlink==2.2.0
 requests==2.25.1
-flox-lib==0.17.0

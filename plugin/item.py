@@ -13,8 +13,9 @@ THUMBNAIL_SIZES = {
 THUMBNAIL_SIZE_VAR = '{width}x{height}'
 DEFAULT_THUMBNAIL_SIZE = THUMBNAIL_SIZES["large"]
 
+
 class ResultItem(ABC):
-    def __init__(self, data:dict, cache_name:str, method:callable, executor:utils.ThreadPoolExecutor):
+    def __init__(self, data: dict, cache_name: str, method: callable, executor: utils.ThreadPoolExecutor):
         self.data = data
         self.executor = executor
         self.method = method
@@ -36,12 +37,15 @@ class ResultItem(ABC):
     def parameters(self):
         pass
 
+    @property
+    def context(self):
+        return self.parameters
+
     @abstractproperty
     def thumbnail(self):
         pass
 
-
-    def get_thumbnail(self, size:str=DEFAULT_THUMBNAIL_SIZE):
+    def get_thumbnail(self, size: str = DEFAULT_THUMBNAIL_SIZE):
         if size not in THUMBNAIL_SIZES:
             raise ValueError(f"{size} is not a valid thumbnail size")
         if THUMBNAIL_SIZE_VAR in self.thumbnail:
@@ -54,8 +58,10 @@ class ResultItem(ABC):
             "title": self.title,
             "subtitle": self.subtitle,
             "method": self.method,
-            "parameters": self.parameters
+            "parameters": self.parameters,
+            "context": self.context,
         }
+
 
 class ChannelItem(ResultItem):
     @property
@@ -86,8 +92,9 @@ class ChannelItem(ResultItem):
     def parameters(self) -> list:
         return [self.path]
 
+
 class GameItem(ChannelItem):
-    
+
     @property
     def thumbnail(self):
         return self.data.get("box_art_url", "").replace('{width}x{height}', DEFAULT_THUMBNAIL_SIZE)
@@ -104,6 +111,7 @@ class GameItem(ChannelItem):
     def path(self):
         name = self.data.get("name")
         return f'directory/game/{name}'
+
 
 class UserItem(ResultItem):
 
@@ -128,6 +136,7 @@ class UserItem(ResultItem):
     @property
     def parameters(self) -> list:
         return [self.data.get("login")]
+
 
 class StreamItem(ResultItem):
 
