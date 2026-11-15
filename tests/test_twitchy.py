@@ -180,3 +180,12 @@ def test_blank_program_args_pass_the_stream_url(twitch, settings, program_args):
     settings["program_args"] = program_args
     (result,) = run_context_menu("speedrunsdaily")["Result"]
     assert result["JsonRPCAction"]["Parameters"] == [r"C:\Tools\mpv\mpv.exe", "https://twitch.tv/speedrunsdaily"]
+
+
+def test_offline_channel_offers_no_quality_urls(twitch, settings, monkeypatch):
+    import streamlink
+
+    monkeypatch.setattr(streamlink, "streams", lambda url: {})
+    settings["program_path"] = "/usr/bin/mpv"
+    settings["program_args"] = "{best}"
+    assert run_context_menu("cozycrafts")["Result"] == []

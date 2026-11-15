@@ -122,10 +122,12 @@ async def query(query: str) -> Dict[str, Any]:
     return await run_blocking(lookup, query)
 
 
-def stream_urls(url: str) -> Dict[str, str]:
+def stream_urls(url: str) -> Optional[Dict[str, str]]:
     import streamlink
 
     streams = streamlink.streams(url)
+    if "best" not in streams or "worst" not in streams:
+        return None
     return {"best": streams["best"].url, "worst": streams["worst"].url}
 
 
@@ -135,9 +137,11 @@ def program_menu(path: str) -> List[Result]:
         return []
     url = channel_url(path)
     program_args = setting("program_args") or "{url}"
-    urls = {"best": "", "worst": ""}
+    urls: Optional[Dict[str, str]] = {"best": "", "worst": ""}
     if "{best}" in program_args or "{worst}" in program_args:
         urls = stream_urls(url)
+    if urls is None:
+        return []
     args = program_args.format(url=url, **urls)
     return [
         Result(
