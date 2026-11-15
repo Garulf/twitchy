@@ -134,7 +134,7 @@ def program_menu(path: str) -> List[Result]:
     if not program_path:
         return []
     url = channel_url(path)
-    program_args = plugin.settings.get("program_args", "{url}")
+    program_args = setting("program_args") or "{url}"
     urls = {"best": "", "worst": ""}
     if "{best}" in program_args or "{worst}" in program_args:
         urls = stream_urls(url)

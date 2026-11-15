@@ -172,3 +172,11 @@ def test_more_than_100_follows_are_looked_up_in_batches(twitch, settings):
     assert titles(run_query("#")) == ["SpeedrunsDaily"]
     stream_batches = [len(call[2]["user_id"]) for call in twitch.calls if call[1].endswith("/streams")]
     assert stream_batches == [100, 50]
+
+
+@pytest.mark.parametrize("program_args", [None, ""])
+def test_blank_program_args_pass_the_stream_url(twitch, settings, program_args):
+    settings["program_path"] = r"C:\Tools\mpv\mpv.exe"
+    settings["program_args"] = program_args
+    (result,) = run_context_menu("speedrunsdaily")["Result"]
+    assert result["JsonRPCAction"]["Parameters"] == [r"C:\Tools\mpv\mpv.exe", "https://twitch.tv/speedrunsdaily"]
