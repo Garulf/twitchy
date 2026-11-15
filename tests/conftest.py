@@ -51,6 +51,9 @@ STREAMS = [
 ]
 
 
+MAX_IDS_PER_REQUEST = 100
+
+
 class FakeResponse:
     def __init__(self, payload: Any, status_code: int = 200) -> None:
         self._payload = json.loads(json.dumps(payload))
@@ -89,6 +92,9 @@ class FakeTwitch:
         path = url[len(helix.HELIX_URL) + 1:]
         if path == self.failing:
             return FakeResponse({"status": 410, "message": "Gone"}, 410)
+        lookups = sum(len((params or {}).get(key) or []) for key in ("id", "login", "user_id"))
+        if lookups > MAX_IDS_PER_REQUEST:
+            return FakeResponse({"status": 400, "message": "too many ids"}, 400)
         return FakeResponse(self.helix(path, dict(params or {})))
 
     def helix(self, path: str, params: dict) -> dict:

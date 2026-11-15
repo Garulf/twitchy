@@ -163,3 +163,12 @@ def test_open_program_starts_the_program(monkeypatch):
     monkeypatch.setattr(twitchy, "Popen", started.append)
     asyncio.run(twitchy.plugin._event_handler.trigger_event("open_program", "/usr/bin/mpv", "https://twitch.tv/x"))
     assert started == [["/usr/bin/mpv", "https://twitch.tv/x"]]
+
+
+def test_more_than_100_follows_are_looked_up_in_batches(twitch, settings):
+    settings["username"] = "viewer"
+    twitch.follows = [str(n) for n in range(1000, 1149)] + ["42"]
+    assert titles(run_query("")) == ["SpeedrunsDaily"]
+    assert titles(run_query("#")) == ["SpeedrunsDaily"]
+    stream_batches = [len(call[2]["user_id"]) for call in twitch.calls if call[1].endswith("/streams")]
+    assert stream_batches == [100, 50]

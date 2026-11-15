@@ -7,11 +7,18 @@ from requests import Session
 OAUTH_URL = "https://id.twitch.tv/oauth2"
 HELIX_URL = "https://api.twitch.tv/helix"
 PAGE_SIZE = 100
+MAX_IDS = 100
 TIMEOUT = 10
 
 
 class MissingCredentials(Exception):
     pass
+
+
+def batches(values: Iterable[str], size: int = MAX_IDS) -> Iterator[List[str]]:
+    values = list(values)
+    for start in range(0, len(values), size):
+        yield values[start:start + size]
 
 
 def request_app_token(client_id: str, client_secret: str, session: Optional[Session] = None) -> str:
@@ -62,10 +69,15 @@ class Helix:
         return self._paginate("games/top", {"first": PAGE_SIZE})
 
     def users(self, logins: Iterable[str] = (), ids: Iterable[str] = ()) -> List[Dict[str, Any]]:
-        return self._get("users", {"login": list(logins), "id": list(ids)}).get("data", [])
+        users = [user for batch in batches(logins) for user in self._get("users", {"login": batch}).get("data", [])]
+        return users + [user for batch in batches(ids) for user in self._get("users", {"id": batch}).get("data", [])]
 
     def user_follows(self, from_id: str) -> Iterator[Dict[str, Any]]:
         return self._paginate("users/follows", {"from_id": from_id, "first": PAGE_SIZE})
 
     def streams(self, user_ids: Iterable[str]) -> List[Dict[str, Any]]:
-        return self._get("streams", {"user_id": list(user_ids), "first": PAGE_SIZE}).get("data", [])
+        return [
+            stream
+            for batch in batches(user_ids)
+            for stream in self._get("streams", {"user_id": batch, "first": PAGE_SIZE}).get("data", [])
+        ]
