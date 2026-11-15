@@ -74,7 +74,16 @@ Pre-releases of the next version are published from the open release PR on the
 
 ## Configuration
 
-Open **Settings → Plugins → Twitchy** in Flow Launcher and set the client ID and secret of your Twitch application.
+Twitchy needs a Twitch application to talk to the Twitch API. Creating one takes a few minutes:
+
+1. Turn on [two-factor authentication](https://www.twitch.tv/settings/security) for your Twitch account. The developer console requires it.
+2. Open the [Twitch developer console](https://dev.twitch.tv/console/apps) and click **Register Your Application**.
+3. Give it any unique name, add `http://localhost` as the OAuth Redirect URL, pick a category and click **Create**.
+4. Click **Manage** on the new application. Copy the **Client ID**, then click **New Secret** and copy the **Client Secret**.
+5. In Flow Launcher, open **Settings → Plugins → Twitchy** and paste both. Leave **OAuth Token** empty.
+
+The first search fetches an app access token with your client ID and secret and saves it in **OAuth Token**.
+When it expires, Twitchy fetches a new one.
 
 | Setting | Description |
 | --- | --- |
