@@ -1,0 +1,47 @@
+{
+  "keyword": "tw",
+  "query": ":",
+  "icon": "../../data/icon.png",
+  "max_results": 4,
+  "selection": 0,
+  "results": [
+    {
+      "title": "Just Chatting",
+      "subtitle": "Game",
+      "art": {
+        "text": "JC",
+        "color": "#5C6BC0",
+        "shape": "box"
+      }
+    },
+    {
+      "title": "Celeste",
+      "subtitle": "Game",
+      "art": {
+        "text": "C",
+        "color": "#C2185B",
+        "shape": "box"
+      }
+    },
+    {
+      "title": "Stardew Valley",
+      "subtitle": "Game",
+      "art": {
+        "text": "SV",
+        "color": "#388E3C",
+        "shape": "box"
+      }
+    },
+    {
+      "title": "Hades II",
+      "subtitle": "Game",
+      "art": {
+        "text": "H",
+        "color": "#6D4C41",
+        "shape": "box"
+      }
+    }
+  ],
+  "query_suggestion": "",
+  "show_caret": false
+}

@@ -1,0 +1,104 @@
+{% extends "base.md.j2" %}
+
+{% block badges_extra %} [![Downloads](https://img.shields.io/github/downloads/{{ project.owner }}/{{ project.repo }}/total)]({{ project.url }}/releases/latest){% endblock %}
+
+{% block usage %}
+## Features
+
+* **Search channels.** Live channels show the game and stream title, offline ones say so.
+* **Browse top games.** `tw :` lists the most watched games, `tw :celeste` filters them.
+* **Open in your browser.** `Enter` opens the channel or game on twitch.tv.
+* **Open in your own player.** Point Twitchy at mpv, VLC or any program and open streams from the context menu.
+
+## Usage
+
+Type `tw` followed by a channel name:
+
+```
+tw speed
+```
+
+{{ screenshot("search", alt="Twitchy channel search in Flow Launcher") }}
+
+| Query | Result |
+| --- | --- |
+| `tw <name>` | Channels matching the name |
+| `tw :` | The top games on Twitch |
+| `tw :<name>` | Top games whose name contains the text |
+| `tw` | Live streams from channels you follow (needs a username, see below) |
+| `tw #` | Channels you follow (needs a username, see below) |
+
+### Top games
+
+{{ screenshot("games", alt="Top games on Twitch in Flow Launcher") }}
+
+### Open a stream in another program
+
+Set **Program Path** in the settings, then open the context menu (`Shift+Enter` or right-click) on a channel:
+
+{{ screenshot("context", alt="Open Stream in mpv from the context menu") }}
+
+**Program Arguments** can use these placeholders. Without arguments the program gets the channel URL.
+
+| Placeholder | Value |
+| --- | --- |
+| `{url}` | The channel URL, for example `https://twitch.tv/speedrunsdaily` |
+| `{best}` | The best quality stream URL, resolved with streamlink |
+| `{worst}` | The lowest quality stream URL, resolved with streamlink |
+
+## Installation
+
+### Flow Launcher
+
+In Flow Launcher, type:
+
+```
+pm install twitchy
+```
+
+{{ screenshot("install", alt="Flow Launcher plugin manager installing Twitchy") }}
+
+### Manual installation
+
+Download `twitchy-<version>.zip` from the [latest release]({{ project.url }}/releases/latest) and unzip it into
+`%appdata%\FlowLauncher\Plugins`, then restart Flow Launcher.
+
+Pre-releases of the next version are published from the open release PR on the
+[releases page]({{ project.url }}/releases) for testing. Flow Launcher won't offer them as updates.
+
+## Configuration
+
+Open **Settings → Plugins → Twitchy** in Flow Launcher and set the client ID and secret of your Twitch application.
+
+| Setting | Description |
+| --- | --- |
+| Client ID | The client ID of your Twitch application |
+| Client Secret | The client secret of your Twitch application |
+| OAuth Token | Filled in for you. You can paste your own token instead, but Twitchy still needs the client ID |
+| Username | Your Twitch username, for the followed channels queries |
+| Program Path | A program to open streams with, such as `C:\Program Files\mpv\mpv.exe` |
+| Program Arguments | Arguments for that program, see the placeholders above |
+
+### Followed channels
+
+The `tw` and `tw #` queries used Twitch's Get Users Follows endpoint, which
+[Twitch removed in September 2023](https://dev.twitch.tv/docs/change-log/). Until Twitchy moves to its
+replacement, which needs a user token, those two queries show an error when a username is set.
+
+## Requirements
+
+* Flow Launcher 1.17.0 or newer
+* Python 3.10 or newer, which Flow Launcher can install for you
+{% set recent = changelog(3) %}{% if recent %}
+## Changelog
+
+{{ recent }}
+
+See [CHANGELOG.md](CHANGELOG.md) for the full history.
+{% endif %}
+{% endblock %}
+
+{% block screenshots %}{% endblock %}
+{% block install %}{% endblock %}
+{% block contributing %}{% endblock %}
+{% block license %}{% endblock %}
