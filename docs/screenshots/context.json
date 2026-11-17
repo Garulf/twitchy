@@ -1,0 +1,20 @@
+{
+  "keyword": "tw",
+  "query": "speedrunsdaily",
+  "icon": "../../data/icon.png",
+  "max_results": 1,
+  "selection": 0,
+  "results": [
+    {
+      "title": "Open Stream in mpv.exe",
+      "subtitle": "https://twitch.tv/speedrunsdaily",
+      "art": {
+        "text": "mpv",
+        "color": "#6A1B9A",
+        "shape": "box"
+      }
+    }
+  ],
+  "query_suggestion": "",
+  "show_caret": false
+}

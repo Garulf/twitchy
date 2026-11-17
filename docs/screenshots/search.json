@@ -1,0 +1,38 @@
+{
+  "keyword": "tw",
+  "query": "speed",
+  "icon": "../../data/icon.png",
+  "max_results": 3,
+  "selection": 0,
+  "results": [
+    {
+      "title": "SpeedrunsDaily",
+      "subtitle": "Celeste - Any% practice, chat picks the route",
+      "art": {
+        "text": "SD",
+        "color": "#9146FF",
+        "shape": "circle"
+      }
+    },
+    {
+      "title": "SpeedySam",
+      "subtitle": "Hades II - Surface runs until the weekend",
+      "art": {
+        "text": "SS",
+        "color": "#E91E63",
+        "shape": "circle"
+      }
+    },
+    {
+      "title": "Speedwagon_TV",
+      "subtitle": "Offline",
+      "art": {
+        "text": "ST",
+        "color": "#00897B",
+        "shape": "circle"
+      }
+    }
+  ],
+  "query_suggestion": "",
+  "show_caret": false
+}

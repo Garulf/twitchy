@@ -5,8 +5,8 @@
   "Description": "Search and stream Twitch.tv",
   "Author": "Garulf",
   "Version": "7.0.0",
-  "Language": "python",
+  "Language": "python_v2",
   "Website": "https://github.com/Garulf/twitchy",
   "IcoPath": "icon.png",
-  "ExecuteFileName": "main.py"
+  "ExecuteFileName": "run.py"
 }
